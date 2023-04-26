@@ -3,7 +3,7 @@
   "productName": "itchclient",
   "version": "1.0.0",
   "description": "My Electron application description",
-  "main": "src/main.js",
+  "main": "main.js",
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
@@ -18,7 +18,9 @@
   },
   "license": "MIT",
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0"
+    "dialogs": "^2.0.1",
+    "electron-squirrel-startup": "^1.0.0",
+    "peerjs": "^1.4.7"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.1.1",

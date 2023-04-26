@@ -1,7 +1,49 @@
+* {
+    box-sizing: border-box;
+    font-family: sans-serif;
+    user-select: none; /* Standard syntax */
+}
+
+html {
+    height: 100%;
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
-    Arial, sans-serif;
-  margin: auto;
-  max-width: 38rem;
-  padding: 2rem;
+    box-sizing: border-box;
+    margin: 0;
+    height: 100%;
+    position: relative;
+}
+
+#window {
+    display: block;
+    border: 1px gray solid;
+    min-width: 640px;
+    min-height: 420px;
+}
+
+#wrapper {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  flex-flow: column;
+  justify-content: center;
+  gap: 3px;
+}
+
+#buttons {
+  width: 640px;
+  display: flex;
+  gap:3px
+}
+
+#buttons > div {
+  padding: 3px;
+  background: whitesmoke;
+  border: 1px gray solid;
+}
+
+#buttons > div:hover {
+  background: lightgray;
+  cursor:pointer;
 }

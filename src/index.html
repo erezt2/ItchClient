@@ -2,11 +2,29 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Hello World!</title>
-    <link rel="stylesheet" href="index.css" />
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <!-- <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'"
+    /> -->
+    <!-- <meta
+      http-equiv="X-Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'"
+    /> -->
+    <link rel="stylesheet" href="index.css">
+    <title>Itch Client</title>
   </head>
   <body>
-    <h1>💖 Hello World!</h1>
-    <p>Welcome to your Electron application.</p>
+    <div id="wrapper">
+      <div id="buttons">
+        <div>join</div>
+        <div>quit</div>
+      </div>
+      <div id="window">
+        <video id="video" width="640px" height="480px" autoplay></video>
+      </div>
+    </div>
+
   </body>
+  <script type="module" src="index.js"></script>
 </html>

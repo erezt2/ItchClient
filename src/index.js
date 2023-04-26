@@ -1,49 +1,72 @@
-const { app, BrowserWindow } = require('electron');
-const path = require('path');
+const UDP = require('dgram')
+const server = UDP.createSocket('udp4')
+const port = 22222
 
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) {
-  app.quit();
-}
+const video = document.getElementById('video');
 
-const createWindow = () => {
-  // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-    },
-  });
+const {Peer} = require("peerjs")
+// god forgive me for what im about to do
+let peer = new Peer();
+const dialog = require('dialogs')()
 
-  // and load the index.html of the app.
-  mainWindow.loadFile(path.join(__dirname, 'index.html'));
+const rect = video.getBoundingClientRect()
+const buttons = document.getElementById("buttons").children
 
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
-};
+peer.on("open", id=> {
+  dialog.prompt("connect to server ID:", data=> {
+    const conn = peer.connect('itch-app-connection-id-'+data);
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+    conn.on('open', () => {
+      document.addEventListener("keydown", function(event) {
+        if(document.getElementsByClassName("dialog-widget").length > 0)
+          return;
+        conn.send({keyDown: event.key});
+      });
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
+      document.addEventListener("keyup", function(event) {
+        conn.send({keyUp: event.key});
+      });
 
-app.on('activate', () => {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  }
-});
+      document.addEventListener("mousedown", function(event) {
+        if(event.button === 0) conn.send({mouseDown: true});
+      })
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
+      document.addEventListener("mouseup", function(event) {
+        if(event.button === 0) conn.send({mouseUp: true});
+      })
+
+      window.addEventListener("mousemove", (event) => {
+          conn.send({mousePos: {
+              x: event.clientX - rect.left,
+              y: event.clientY - rect.top
+          }})
+      })
+
+      buttons[0].onclick = (event)=> {
+        conn.send({join: true})
+      }
+
+      buttons[1].onclick = (event)=> {
+        conn.send({quit: true})
+      }
+
+      window.addEventListener("beforeunload", function(event) {
+        conn.send({quit: true})
+      })
+
+      conn.on("data", (data)=> {
+        if(data.ask) dialog.prompt(data.ask, answer => {
+            conn.send({answer: answer})
+          })
+      })
+    });
+
+    peer.on("call", function(call) {
+      call.answer()
+      call.on("stream", function(stream) {
+        video.srcObject = stream
+        video.play()
+      })
+    })
+  })
+})
