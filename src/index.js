@@ -12,11 +12,14 @@ const dialog = require('dialogs')()
 const rect = video.getBoundingClientRect()
 const buttons = document.getElementById("buttons").children
 
-peer.on("open", id=> {
-  dialog.prompt("connect to server ID:", data=> {
+function ask_ID(info) {
+  dialog.prompt(info+"\nconnect to server ID:", data=> {
     const conn = peer.connect('itch-app-connection-id-'+data);
-
+    console.log(conn)
+    conn.on("error", () => ask_ID("connection failed"))
+    conn.on("close", () => ask_ID("connection closed"))
     conn.on('open', () => {
+      
       document.addEventListener("keydown", function(event) {
         if(document.getElementsByClassName("dialog-widget").length > 0)
           return;
@@ -65,8 +68,12 @@ peer.on("open", id=> {
       call.answer()
       call.on("stream", function(stream) {
         video.srcObject = stream
-        video.play()
+        // video.play()
       })
     })
   })
+}
+
+peer.on("open", id=> {
+  ask_ID("")
 })
